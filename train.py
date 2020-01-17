@@ -179,8 +179,8 @@ def train_one_epoch(sess, ops, train_writer):
     for fn in range(len(TRAIN_FILES)):
         log_string('----' + str(fn) + '-----')
         current_data, current_label = provider.loadDataFile(TRAIN_FILES[train_file_idxs[fn]])
-        current_data = current_data[:,0:NUM_POINT,:]
-        current_data, current_label, _ = provider.shuffle_data(current_data, np.squeeze(current_label))            
+        current_data = current_data[:,0:NUM_POINT,:]  #截取
+        current_data, current_label, _ = provider.shuffle_data(current_data, np.squeeze(current_label))      #随机排序      
         current_label = np.squeeze(current_label)
         
         file_size = current_data.shape[0]

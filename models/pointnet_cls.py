@@ -23,6 +23,7 @@ def get_model(point_cloud, is_training, bn_decay=None):
 
     with tf.variable_scope('transform_net1') as sc:
         transform = input_transform_net(point_cloud, is_training, bn_decay, K=3)
+    #transform points
     point_cloud_transformed = tf.matmul(point_cloud, transform)
     input_image = tf.expand_dims(point_cloud_transformed, -1)
 
@@ -39,7 +40,7 @@ def get_model(point_cloud, is_training, bn_decay=None):
         transform = feature_transform_net(net, is_training, bn_decay, K=64)
     end_points['transform'] = transform
     net_transformed = tf.matmul(tf.squeeze(net, axis=[2]), transform)
-    net_transformed = tf.expand_dims(net_transformed, [2])
+    net_transformed = tf.expand_dims(net_transformed, [2])  # 32 x 1024 x 1 x64
 
     net = tf_util.conv2d(net_transformed, 64, [1,1],
                          padding='VALID', stride=[1,1],
@@ -48,11 +49,11 @@ def get_model(point_cloud, is_training, bn_decay=None):
     net = tf_util.conv2d(net, 128, [1,1],
                          padding='VALID', stride=[1,1],
                          bn=True, is_training=is_training,
-                         scope='conv4', bn_decay=bn_decay)
+                         scope='conv4', bn_decay=bn_decay)   #32 x 1024 x 1 x 128
     net = tf_util.conv2d(net, 1024, [1,1],
                          padding='VALID', stride=[1,1],
                          bn=True, is_training=is_training,
-                         scope='conv5', bn_decay=bn_decay)
+                         scope='conv5', bn_decay=bn_decay)   #32 x 1024 x 1 x 1024
 
     # Symmetric function: max pooling
     net = tf_util.max_pool2d(net, [num_point,1],
